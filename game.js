@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
   // ── VERSION CHECK ───────────────────────────────────────────
-  const GAME_VERSION   = '5';              // bump this to reset
+  const GAME_VERSION   = '6';              // bump this to reset
   const VER_COOKIE     = 'lukle_version';
   const GUESSES_COOKIE = 'guesses';
 
@@ -175,7 +175,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderResults() {
-      const max = initialNumbers.length;
+      const max = 6;
       let head = '', body = '';
       for (let i = 0; i < max; i++) {
         if (i < guesses.length) {
@@ -304,7 +304,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // share modal actions
     shareBtn.addEventListener('click', () => {
-      const max     = initialNumbers.length;
       const count   = guesses.length + 1; // include perfect guess
       const squares = guesses
         .map(({ rawDist }) =>
@@ -316,7 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
         )
         .concat('🟩')
         .join('');
-      const shareText = `Lukle ${count}/${max}\n${squares}`;
+      const shareText = `Lukle 1 ${count}/6\n\n${squares}\n\nhttps://morgans42.github.io/Lukle/`;
 
       if (navigator.share) {
         navigator.share({ text: shareText }).catch(console.error);
