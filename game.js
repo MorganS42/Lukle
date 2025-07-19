@@ -14,17 +14,16 @@ window.addEventListener('DOMContentLoaded', () => {
   const target = 880;
   const initialNumbers = [50, 75, 2, 4, 7, 1].sort((a, b) => b - a);
 
-  // ----- Cookie helpers -----
-  function saveGuessesToCookie() {
-    const json = encodeURIComponent(JSON.stringify(guesses));
-    document.cookie = `guesses=${json}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+  // ----- Persistence helpers via localStorage -----
+  function saveGuesses() {
+    localStorage.setItem('guesses', JSON.stringify(guesses));
   }
 
-  function loadGuessesFromCookie() {
-    const match = document.cookie.match(/(?:^|; )guesses=([^;]+)/);
-    if (!match) return;
+  function loadGuesses() {
+    const raw = localStorage.getItem('guesses');
+    if (!raw) return;
     try {
-      const arr = JSON.parse(decodeURIComponent(match[1]));
+      const arr = JSON.parse(raw);
       if (Array.isArray(arr)) {
         arr.forEach(item => {
           if (typeof item.guess === 'number' && typeof item.rawDist === 'number') {
@@ -33,14 +32,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       }
     } catch (e) {
-      console.warn('Could not parse saved guesses cookie', e);
+      console.warn('Could not parse saved guesses from localStorage', e);
     }
   }
 
-  // load persisted guesses
-  loadGuessesFromCookie();
+  // Load persisted guesses
+  loadGuesses();
 
-  // ----- Card and control functions -----
+  // ----- Card & control logic -----
   function createCard(value, sources = null) {
     const btn = document.createElement('button');
     btn.className = 'game__card';
@@ -142,10 +141,13 @@ window.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // Setup initial cards
+  // Initialize game
   initialNumbers.forEach(n => createCard(n));
+  loadGuesses(); // ensure guesses loaded before initial render
+  updateControls();
+  renderResults();
 
-  // Operator handlers
+  // Operator click handlers
   operators.forEach(op => {
     op.addEventListener('click', e => {
       if (!firstCard) return;
@@ -164,23 +166,30 @@ window.addEventListener('DOMContentLoaded', () => {
   // Control handlers
   ctrlReset.addEventListener('click', () => {
     document.querySelectorAll('.game__card[data-sources]').forEach(card => {
-      const [a,b] = JSON.parse(card.dataset.sources);
-      [a,b].forEach(id => {
+      const [a, b] = JSON.parse(card.dataset.sources);
+      [a, b].forEach(id => {
         const orig = cardsContainer.querySelector(`[data-id=\"${id}\"]`);
-        if (orig) { orig.classList.remove('used'); orig.disabled = false; }
+        if (orig) {
+          orig.classList.remove('used');
+          orig.disabled = false;
+        }
       });
       card.remove();
     });
     clearSelections();
     updateControls();
+    // keep guess history intact
   });
 
   ctrlDecompose.addEventListener('click', () => {
     if (firstCard && firstCard.dataset.sources) {
-      const [a,b] = JSON.parse(firstCard.dataset.sources);
-      [a,b].forEach(id => {
+      const [a, b] = JSON.parse(firstCard.dataset.sources);
+      [a, b].forEach(id => {
         const orig = cardsContainer.querySelector(`[data-id=\"${id}\"]`);
-        if (orig) { orig.classList.remove('used'); orig.disabled = false; }
+        if (orig) {
+          orig.classList.remove('used');
+          orig.disabled = false;
+        }
       });
       firstCard.remove();
       clearSelections();
@@ -194,7 +203,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const rawDist = Math.abs(guess - target);
     if (guesses.length < 6) {
       guesses.push({ guess, rawDist });
-      saveGuessesToCookie();
+      saveGuesses();
     }
     firstCard.classList.remove('selected');
     firstCard = null;
@@ -203,8 +212,4 @@ window.addEventListener('DOMContentLoaded', () => {
     updateControls();
     renderResults();
   });
-
-  // Initial state
-  updateControls();
-  renderResults();
 });
