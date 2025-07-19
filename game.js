@@ -10,20 +10,25 @@ window.addEventListener('DOMContentLoaded', () => {
   let chosenOperator = null;
   let idCounter = 0;
   const guesses = [];
+
   // hidden target and initial numbers
   const target = 880;
   const initialNumbers = [50, 75, 2, 4, 7, 1].sort((a, b) => b - a);
 
-  // ----- Persistence helpers via localStorage -----
-  function saveGuesses() {
-    localStorage.setItem('guesses', JSON.stringify(guesses));
+  // ----- Cookie persistence helpers -----
+  function saveGuessesToCookie() {
+    const json = encodeURIComponent(JSON.stringify(guesses));
+    // 7 days max-age, path=/, SameSite=Lax for GitHub Pages
+    document.cookie = `guesses=${json}; path=/; max-age=${60*60*24*7}; SameSite=Lax`;
   }
 
-  function loadGuesses() {
-    const raw = localStorage.getItem('guesses');
-    if (!raw) return;
+  function loadGuessesFromCookie() {
+    const pairs = document.cookie.split('; ').map(cookie => cookie.split('='));
+    const cookieMap = {};
+    pairs.forEach(([key, ...vals]) => cookieMap[key] = vals.join('='));
+    if (!cookieMap.guesses) return;
     try {
-      const arr = JSON.parse(raw);
+      const arr = JSON.parse(decodeURIComponent(cookieMap.guesses));
       if (Array.isArray(arr)) {
         arr.forEach(item => {
           if (typeof item.guess === 'number' && typeof item.rawDist === 'number') {
@@ -32,12 +37,12 @@ window.addEventListener('DOMContentLoaded', () => {
         });
       }
     } catch (e) {
-      console.warn('Could not parse saved guesses from localStorage', e);
+      console.warn('Failed to load guesses from cookie', e);
     }
   }
 
-  // Load persisted guesses
-  loadGuesses();
+  // Load saved guesses before rendering
+  loadGuessesFromCookie();
 
   // ----- Card & control logic -----
   function createCard(value, sources = null) {
@@ -116,7 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderResults() {
-    const max = 6;
+    const max = initialNumbers.length;
     let head = '';
     let body = '';
     for (let i = 0; i < max; i++) {
@@ -124,8 +129,8 @@ window.addEventListener('DOMContentLoaded', () => {
         const { guess, rawDist } = guesses[i];
         head += `<th style=\"padding:0.5rem; font-size:1.5rem; border:none;\">${guess}</th>`;
         let disp;
-        if      (rawDist > 100) disp = `<= ${Math.ceil(rawDist / 100) * 100}`;
-        else if (rawDist > 10)  disp = `<= ${Math.ceil(rawDist / 10) * 10}`;
+        if      (rawDist > 100) disp = `<= ${Math.ceil(rawDist/100)*100}`;
+        else if (rawDist > 10)  disp = `<= ${Math.ceil(rawDist/10)*10}`;
         else                     disp = `${rawDist}`;
         body += `<td style=\"padding:0.5rem; font-size:1.5rem; border:none;\">${disp}</td>`;
       } else {
@@ -141,11 +146,10 @@ window.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // Initialize game
+  // Initialize game state
   initialNumbers.forEach(n => createCard(n));
-  loadGuesses(); // ensure guesses loaded before initial render
-  updateControls();
   renderResults();
+  updateControls();
 
   // Operator click handlers
   operators.forEach(op => {
@@ -166,30 +170,24 @@ window.addEventListener('DOMContentLoaded', () => {
   // Control handlers
   ctrlReset.addEventListener('click', () => {
     document.querySelectorAll('.game__card[data-sources]').forEach(card => {
-      const [a, b] = JSON.parse(card.dataset.sources);
-      [a, b].forEach(id => {
+      const [a,b] = JSON.parse(card.dataset.sources);
+      [a,b].forEach(id => {
         const orig = cardsContainer.querySelector(`[data-id=\"${id}\"]`);
-        if (orig) {
-          orig.classList.remove('used');
-          orig.disabled = false;
-        }
+        if (orig) { orig.classList.remove('used'); orig.disabled = false; }
       });
       card.remove();
     });
     clearSelections();
     updateControls();
-    // keep guess history intact
+    // preserve guess history in cookie
   });
 
   ctrlDecompose.addEventListener('click', () => {
     if (firstCard && firstCard.dataset.sources) {
-      const [a, b] = JSON.parse(firstCard.dataset.sources);
-      [a, b].forEach(id => {
+      const [a,b] = JSON.parse(firstCard.dataset.sources);
+      [a,b].forEach(id => {
         const orig = cardsContainer.querySelector(`[data-id=\"${id}\"]`);
-        if (orig) {
-          orig.classList.remove('used');
-          orig.disabled = false;
-        }
+        if (orig) { orig.classList.remove('used'); orig.disabled = false; }
       });
       firstCard.remove();
       clearSelections();
@@ -201,9 +199,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!firstCard) return;
     const guess = parseFloat(firstCard.textContent);
     const rawDist = Math.abs(guess - target);
-    if (guesses.length < 6) {
+    if (guesses.length < initialNumbers.length) {
       guesses.push({ guess, rawDist });
-      saveGuesses();
+      saveGuessesToCookie();
     }
     firstCard.classList.remove('selected');
     firstCard = null;
