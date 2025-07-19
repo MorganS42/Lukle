@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
   // ── VERSION CHECK ───────────────────────────────────────────
-  const GAME_VERSION   = '2';              // bump this to reset
+  const GAME_VERSION   = '5';              // bump this to reset
   const VER_COOKIE     = 'lukle_version';
   const GUESSES_COOKIE = 'guesses';
 
