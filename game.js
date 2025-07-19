@@ -1,4 +1,44 @@
 window.addEventListener('DOMContentLoaded', () => {
+  // ── VERSION CHECK ───────────────────────────────────────────
+  const GAME_VERSION   = '1';              // bump this to reset
+  const VER_COOKIE     = 'lukle_version';
+  const GUESSES_COOKIE = 'guesses';
+
+  // simple cookie getter
+  function getCookie(name) {
+    return document.cookie
+      .split('; ')
+      .find(row => row.startsWith(name + '='))
+      ?.split('=')[1];
+  }
+
+  // in‑memory guesses must exist early
+  let guesses = [];
+
+  if (getCookie(VER_COOKIE) !== GAME_VERSION) {
+    // 1) clear the saved cookie
+    document.cookie = `${GUESSES_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+    // 2) clear our internal array
+    guesses = [];
+    // 3) write the new version so we don't keep wiping
+    document.cookie = `${VER_COOKIE}=${GAME_VERSION}; path=/; max-age=${60*60*24*365}; SameSite=Lax`;
+  }
+  // ────────────────────────────────────────────────────────────
+
+  // now you can safely load guesses from cookie (it’s empty if version mismatched)
+  function loadGuessesFromCookie() {
+    const pairs = document.cookie.split('; ').map(c => c.split('='));
+    const map = {};
+    pairs.forEach(([k, ...v]) => map[k] = v.join('='));
+    if (!map.guesses) return;
+    try {
+      const arr = JSON.parse(decodeURIComponent(map.guesses));
+      if (Array.isArray(arr)) guesses = arr;
+    } catch { /* ignore */ }
+  }
+
+  loadGuessesFromCookie();
+
   (async () => {
     // 1) Load game configuration
     let target, initialNumbers;
