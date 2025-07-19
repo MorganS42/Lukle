@@ -129,8 +129,8 @@ window.addEventListener('DOMContentLoaded', () => {
         const { guess, rawDist } = guesses[i];
         head += `<th style=\"padding:0.5rem; font-size:1.5rem; border:none;\">${guess}</th>`;
         let disp;
-        if      (rawDist > 100) disp = `<= ${Math.ceil(rawDist/100)*100}`;
-        else if (rawDist > 10)  disp = `<= ${Math.ceil(rawDist/10)*10}`;
+        if      (rawDist > 100) disp = `≤ ${Math.ceil(rawDist/100)*100}`;
+        else if (rawDist > 10)  disp = `≤ ${Math.ceil(rawDist/10)*10}`;
         else                     disp = `${rawDist}`;
         body += `<td style=\"padding:0.5rem; font-size:1.5rem; border:none;\">${disp}</td>`;
       } else {
