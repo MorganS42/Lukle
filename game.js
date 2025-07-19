@@ -315,7 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
         )
         .concat('🟩')
         .join('');
-      const shareText = `Lukle 1 ${count}/6\n\n${squares}\n\nhttps://morgans42.github.io/Lukle/`;
+      const shareText = `Lukle 2 ${count}/6\n\n${squares}\n\nhttps://morgans42.github.io/Lukle/`;
 
       if (navigator.share) {
         navigator.share({ text: shareText }).catch(console.error);
