@@ -5,7 +5,7 @@
   --bg: #121212;
   --surface: #1e1e1e;
   --text: #e0e0e0;
-  --accent: #bb86fc;
+  --accent: #8e86fc;
   --link: #8ab4f8;
 
   /* Countdown palette */
@@ -44,7 +44,7 @@ header, footer {
 }
 
 header h1 {
-  font-size: 1.5rem;
+  font-size: 3rem;
   color: var(--accent);
 }
 
@@ -287,4 +287,81 @@ main {
     /* slightly smaller text so it still fits */
     font-size: clamp(0.75rem, 3vw, 1.5rem) !important;
   }
+}
+
+.game__cards {
+  /* reserve space for (say) two rows of cards */
+  min-height: 300px;      /* adjust so it’s roughly the height of two rows */
+  max-height: 300px;
+  overflow-y: auto;       /* scroll inside when you get more rows */
+  align-content: start;   /* keep the cards stacked at the top */
+}
+
+/* 1) Prevent the page from ever scrolling */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* if you’d rather scope it to <main> instead, do:
+main {
+  overflow: hidden;
+}
+*/
+
+/* 2) Keep your cards container scrollable when it needs to */
+.game__cards {
+  /* cap to two rows high */
+  max-height: 200px;      /* ← tune to two rows of cards exactly */
+  overflow-y: auto;       /* internal scroll only when you overflow */
+  align-content: start;   /* keep new cards pinned to the top */
+}
+
+/* Modal overlay */
+.modal {
+  position: fixed;
+  inset: 0;                 /* top/right/bottom/left = 0 */
+  display: none;            /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+/* Show it when active */
+.modal.active {
+  display: flex;
+}
+
+/* The white “card” */
+.modal-content {
+  background: var(--surface);
+  color: var(--text);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  max-width: 90%;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Buttons row */
+.modal-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Reuse your existing .btn styles or define: */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--countdown-gold);
+  color: var(--countdown-deep);
 }

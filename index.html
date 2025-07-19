@@ -35,11 +35,18 @@
     <div class="game__cards"></div>
   </main>
 
-  <footer>
-    <p>© 2025 Morgan Stoodley</p>
-  </footer>
+  <div id="share-modal" class="modal">
+    <div class="modal-content">
+      <h2>🎉 Spot on!</h2>
+      <p>You nailed the target exactly. Want to share your result?</p>
+      <div class="modal-buttons">
+        <button id="share-btn" class="btn primary">Share</button>
+        <button id="close-btn" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
 
-  <!-- link your JavaScript just before closing body -->
-  <script src="game.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script src="game.js?v=2" defer></script>
 </body>
 </html>
