@@ -1,0 +1,45 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lukle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Lukle</h1>
+  </header>
+
+  <main class="game-only">
+    <!-- results will go here -->
+    <div class="game__results"></div>
+
+    <!-- control buttons -->
+    <div class="game__controls">
+      <button class="game__control ctrl-decompose" disabled>Split</button>
+      <button class="game__control ctrl-submit" disabled>Submit</button>
+      <button class="game__control ctrl-reset" disabled>Reset</button>
+    </div>
+
+    <!-- operator row -->
+    <div class="game__operators">
+      <button class="game__operator">+</button>
+      <button class="game__operator">−</button>
+      <button class="game__operator">×</button>
+      <button class="game__operator">÷</button>
+    </div>
+
+    <!-- number row -->
+    <div class="game__cards"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Morgan Stoodley</p>
+  </footer>
+
+  <!-- link your JavaScript just before closing body -->
+  <script src="game.js" defer></script>
+</body>
+</html>
