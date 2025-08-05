@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
   // ── VERSION CHECK ───────────────────────────────────────────
-  const GAME_VERSION   = '17';
+  const GAME_VERSION   = '18';
   const VER_COOKIE     = 'lukle_version';
   const GUESSES_COOKIE = 'guesses';
 
@@ -315,7 +315,7 @@ window.addEventListener('DOMContentLoaded', () => {
         )
         .concat('🟩')
         .join('');
-      const shareText = `Lukle 13 ${count}/6\n\n${squares}\n\nhttps://morgans42.github.io/Lukle/`;
+      const shareText = `Lukle 15 ${count}/6\n\n${squares}\n\nhttps://morgans42.github.io/Lukle/`;
 
       if (navigator.share) {
         navigator.share({ text: shareText }).catch(console.error);
